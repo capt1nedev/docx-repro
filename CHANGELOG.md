@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.2
+
+- Use the live PyPI package in installation and runnable demo instructions.
+- Fix documentation links in the README rendered on PyPI.
+- Document the active Trusted Publishing configuration. Reducer behavior is unchanged.
+
 ## 0.1.1
 
 - Packaged `docx-repro-demo` command: generate and reduce synthetic input from an installed wheel.

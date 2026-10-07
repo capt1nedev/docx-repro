@@ -31,10 +31,10 @@ docx-repro --version
 From GitHub:
 
 ```sh
-python -m pip install "git+https://github.com/capt1nedev/docx-repro.git@v0.1.1"
+python -m pip install "git+https://github.com/capt1nedev/docx-repro.git@v0.1.2"
 ```
 
-Release wheels can also be installed directly from the [GitHub release](https://github.com/capt1nedev/docx-repro/releases/tag/v0.1.1).
+Release wheels can also be installed directly from the [GitHub release](https://github.com/capt1nedev/docx-repro/releases/tag/v0.1.2).
 
 ## Runnable example: missing text in Mammoth
 
@@ -43,7 +43,7 @@ The demo uses original synthetic content and a documented `w:dir` text-loss case
 In a virtual environment, these two commands install and run the complete demo. No checkout or custom checker is needed:
 
 ```sh
-python -m pip install "docx-repro[demo]==0.1.1"
+python -m pip install "docx-repro[demo]==0.1.2"
 docx-repro-demo demo
 ```
 
@@ -53,7 +53,7 @@ Generate a second example with `--wrapper bdo` in a different directory. The che
 
 The demo command generates the source, checker config, reduced document and report. It refuses to replace existing demo files. `--generate-only` generates the source and config without running Mammoth.
 
-For an external bug report, the [MarkItDown nested-list case study](docs/case-study-2323.md) reduces eight paragraphs to the two needed by its checker and examines the intermediate HTML.
+For an external bug report, the [MarkItDown nested-list case study](https://github.com/capt1nedev/docx-repro/blob/v0.1.2/docs/case-study-2323.md) reduces eight paragraphs to the two needed by its checker and examines the intermediate HTML.
 
 This example isolates text preservation; it does not validate full bidirectional layout semantics or prove that a reduced file renders identically in Word.
 
@@ -143,9 +143,9 @@ python -m build
 
 The CI workflow builds and installs the wheel, runs the suite, and exercises the demo on Windows and Linux with Python 3.10 and 3.13. Local release checks also exercise the installed wheel in a fresh environment.
 
-Release publishing uses GitHub Actions and PyPI Trusted Publishing. See [the release guide](docs/releasing.md) for the configured repository, workflow and environment.
+Release publishing uses GitHub Actions and PyPI Trusted Publishing. See [the release guide](https://github.com/capt1nedev/docx-repro/blob/v0.1.2/docs/releasing.md) for the configured repository, workflow and environment.
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for useful contribution cases and [docs/design.md](docs/design.md) for the reduction contract.
+See [CONTRIBUTING.md](https://github.com/capt1nedev/docx-repro/blob/v0.1.2/CONTRIBUTING.md) for useful contribution cases and [docs/design.md](https://github.com/capt1nedev/docx-repro/blob/v0.1.2/docs/design.md) for the reduction contract.
 
 ## Background and maintenance
 
