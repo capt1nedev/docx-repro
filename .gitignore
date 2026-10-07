@@ -8,4 +8,6 @@ build/
 dist/
 demo/
 *.docx
+# This named fixture is generated synthetic content, safe to redistribute.
+!examples/fixtures/mammoth-170.docx
 *.repro.json
