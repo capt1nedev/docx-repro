@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "docx-repro"
-version = "0.1.0"
+version = "0.1.1"
 description = "Reduce DOCX parser bug reports while preserving a user-defined symptom."
 readme = "README.md"
 requires-python = ">=3.10"
@@ -27,14 +27,17 @@ dependencies = []
 
 [project.optional-dependencies]
 demo = ["mammoth==1.13.0"]
+mammoth = ["mammoth>=1.11.0"]
 dev = ["build>=1.2", "ruff>=0.11"]
 
 [project.scripts]
 docx-repro = "docx_repro.cli:main"
+docx-repro-demo = "docx_repro.demo:main"
 
 [project.urls]
 Repository = "https://github.com/capt1nedev/docx-repro"
 Issues = "https://github.com/capt1nedev/docx-repro/issues"
+Documentation = "https://github.com/capt1nedev/docx-repro#readme"
 
 [tool.setuptools.packages.find]
 where = ["src"]

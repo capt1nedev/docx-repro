@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import argparse
+import base64
+import importlib.util
 import json
 import math
 import os
@@ -27,7 +29,13 @@ def parser():
         description="Shrink a DOCX while an explicit checker confirms the same parser symptom."
     )
     arguments.add_argument("input", type=Path)
-    arguments.add_argument("--check-config", required=True, type=Path)
+    checks = arguments.add_mutually_exclusive_group(required=True)
+    checks.add_argument("--check-config", type=Path)
+    checks.add_argument(
+        "--mammoth-missing-text",
+        metavar="PHRASE",
+        help="built-in check: PHRASE remains in document text but is missing from Mammoth HTML",
+    )
     arguments.add_argument("--out", required=True, type=Path)
     arguments.add_argument("--report", type=Path, help="default: OUTPUT.docx.repro.json")
     arguments.add_argument("--timeout", type=_positive, default=10.0, help="seconds per checker")
@@ -47,7 +55,7 @@ def _same_path(first, second):
 
 
 def _check_destinations(args, report):
-    paths = [args.input, args.check_config, args.out, report]
+    paths = [path for path in [args.input, args.check_config, args.out, report] if path is not None]
     for index, path in enumerate(paths):
         if any(_same_path(path, other) for other in paths[index + 1 :]):
             raise InputError(
@@ -90,7 +98,26 @@ def main(argv=None):
         if args.input.stat().st_size > limits.input_bytes:
             raise InputError("Input exceeds the compressed-size limit.")
         package = DocxPackage.load(args.input.read_bytes(), limits)
-        config = CheckConfig.load(args.check_config)
+        if args.check_config is not None:
+            config = CheckConfig.load(args.check_config)
+        else:
+            if not args.mammoth_missing_text.strip():
+                raise InputError("The expected text must contain a non-whitespace character.")
+            if importlib.util.find_spec("mammoth") is None:
+                raise InputError(
+                    'Install the optional checker with: pip install "docx-repro[mammoth]"'
+                )
+            config = CheckConfig(
+                (
+                    sys.executable,
+                    "-m",
+                    "docx_repro.mammoth_check",
+                    "{file}",
+                    "--expect-text-base64="
+                    + base64.b64encode(args.mammoth_missing_text.encode("utf-8")).decode("ascii"),
+                ),
+                Path.cwd(),
+            )
         with tempfile.TemporaryDirectory(prefix="docx-repro-") as temporary:
             runner = CheckRunner(
                 config,

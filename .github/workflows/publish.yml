@@ -1,0 +1,76 @@
+name: publish
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Existing release tag to build (for example v0.1.1)
+        required: true
+        type: string
+      publish:
+        description: Upload to PyPI after validation
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pypi-release
+  cancel-in-progress: false
+
+jobs:
+  verify:
+    uses: ./.github/workflows/ci.yml
+    with:
+      ref: ${{ inputs.tag || github.event.release.tag_name }}
+  build:
+    needs: verify
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          ref: ${{ inputs.tag || github.event.release.tag_name }}
+          persist-credentials: false
+      - uses: actions/setup-python@v7.0.0
+        with:
+          python-version: '3.13'
+      - name: Verify release version
+        env:
+          RELEASE_TAG: ${{ inputs.tag || github.event.release.tag_name }}
+        run: |
+          python - <<'PY'
+          import os, pathlib, subprocess, tomllib
+          tag = os.environ['RELEASE_TAG']
+          version = tomllib.loads(pathlib.Path('pyproject.toml').read_text())['project']['version']
+          assert tag == 'v' + version, 'Release tag must match package version'
+          subprocess.run(['git', 'show-ref', '--verify', 'refs/tags/' + tag], check=True)
+          PY
+      - name: Build and validate distributions
+        run: |
+          python -m pip install build twine
+          python -m build
+          python -m twine check --strict dist/*
+      - uses: actions/upload-artifact@v7.0.1
+        with:
+          name: distributions
+          path: dist/*
+          if-no-files-found: error
+  pypi:
+    if: ${{ (github.event_name == 'release' && vars.PYPI_ENABLED == 'true') || inputs.publish }}
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      url: https://pypi.org/project/docx-repro/
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@v8.0.1
+        with:
+          name: distributions
+          path: dist/
+      - name: Publish verified distributions
+        uses: pypa/gh-action-pypi-publish@v1.14.2

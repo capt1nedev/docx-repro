@@ -24,28 +24,43 @@ docx-repro --version
 From GitHub:
 
 ```sh
-python -m pip install "git+https://github.com/capt1nedev/docx-repro.git@v0.1.0"
+python -m pip install "git+https://github.com/capt1nedev/docx-repro.git@v0.1.1"
 ```
 
-Release wheels can also be installed directly. The package is not published on PyPI; `pip install docx-repro` is not an available installation method for this release.
+Release wheels can also be installed directly. PyPI publication is being configured; until it is live, use the GitHub install above or a release wheel.
 
 ## Runnable example: missing text in Mammoth
 
 The demo uses original synthetic content and a documented `w:dir` text-loss case. It includes an external hyperlink relationship. Mammoth 1.13.0 is pinned so the example is reproducible; later converter versions may fix this symptom.
 
-From the repository root, in a virtual environment:
+In a virtual environment, these two commands install and run the complete demo. No checkout or custom checker is needed:
 
 ```sh
-python -m pip install ".[demo]"
-python examples/generate_demo.py demo
-docx-repro demo/large.docx --check-config demo/check.json --out demo/reduced.docx
+python -m pip install "docx-repro[demo] @ git+https://github.com/capt1nedev/docx-repro.git@v0.1.1"
+docx-repro-demo demo
 ```
 
 The input has 201 body blocks. On the tested Mammoth version, the output retains the one paragraph that still loses the specified text. The report is written to `demo/reduced.docx.repro.json`.
 
 Generate a second example with `--wrapper bdo` in a different directory. The checker rejects candidates that deleted the expected text from the source, and treats conversion exceptions as inconclusive.
 
+The demo command generates the source, checker config, reduced document and report. It refuses to replace existing demo files. `--generate-only` generates the source and config without running Mammoth.
+
+For an external bug report, the [MarkItDown nested-list case study](docs/case-study-2323.md) reduces eight paragraphs to the two needed by its checker and examines the intermediate HTML.
+
 This example isolates text preservation; it does not validate full bidirectional layout semantics or prove that a reduced file renders identically in Word.
+
+## Check missing text in your own document
+
+Install the `mammoth` extra, then select a literal phrase within one paragraph that should survive conversion:
+
+```sh
+docx-repro input.docx --mammoth-missing-text "Expected phrase" --out reduced.docx
+```
+
+This checker requires the phrase in source paragraph text and its absence from visible Mammoth HTML after a successful conversion. It handles inline markup and HTML entities. It does not infer intended styling, normalize whitespace, or check headers and other package parts. Use `--check-config` for other symptoms or converters.
+
+The `demo` extra pins Mammoth 1.13.0; the `mammoth` extra accepts 1.11.0 or later. A newer converter may fix the bug you are investigating. Run the check against the version relevant to your report. MarkItDown 0.1.8 pins Mammoth 1.11.x, so use its checker environment for that case and a separate environment for the 1.13.0 demo.
 
 ## Use your own checker
 
@@ -119,6 +134,8 @@ python -m build
 ```
 
 The CI workflow builds and installs the wheel, runs the suite, and exercises the demo on Windows and Linux with Python 3.10 and 3.13. Local release checks also exercise the installed wheel in a fresh environment.
+
+Release publishing uses GitHub Actions and PyPI Trusted Publishing. See [the release guide](docs/releasing.md) for the configured repository, workflow and environment.
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for useful contribution cases and [docs/design.md](docs/design.md) for the reduction contract.
 
