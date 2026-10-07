@@ -55,6 +55,10 @@ The demo command generates the source, checker config, reduced document and repo
 
 For an external bug report, the [MarkItDown nested-list case study](https://github.com/capt1nedev/docx-repro/blob/v0.1.2/docs/case-study-2323.md) reduces eight paragraphs to the two needed by its checker and examines the intermediate HTML.
 
+A second [synthetic missing-image case](https://github.com/capt1nedev/docx-repro/blob/main/docs/case-study-mammoth-170.md) reproduces Mammoth #170's reported error path when the original document cannot be shared. It includes a minimal fixture, a generator and a crash-specific checker.
+
+If you try the tool on your own converter bug, [share a reduction case](https://github.com/capt1nedev/docx-repro/issues/new?template=reduction_case.md). Versions and the symptom are useful even without a document attachment.
+
 This example isolates text preservation; it does not validate full bidirectional layout semantics or prove that a reduced file renders identically in Word.
 
 ## Check missing text in your own document

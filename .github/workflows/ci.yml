@@ -48,3 +48,7 @@ jobs:
       - name: Exercise installed CLI
         run: |
           docx-repro-demo demo
+      - name: Exercise synthetic missing-image checker
+        run: |
+          python examples/make_mammoth_170_case.py image-case
+          docx-repro image-case/synthetic.docx --check-config image-case/check.json --out image-case/reduced.docx
