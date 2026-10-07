@@ -14,6 +14,13 @@ The reducer edits the original `word/document.xml` bytes. It retains namespace d
 
 ## Install
 
+From [PyPI](https://pypi.org/project/docx-repro/):
+
+```sh
+python -m pip install docx-repro
+docx-repro --version
+```
+
 From a checkout:
 
 ```sh
@@ -27,7 +34,7 @@ From GitHub:
 python -m pip install "git+https://github.com/capt1nedev/docx-repro.git@v0.1.1"
 ```
 
-Release wheels can also be installed directly. PyPI publication is being configured; until it is live, use the GitHub install above or a release wheel.
+Release wheels can also be installed directly from the [GitHub release](https://github.com/capt1nedev/docx-repro/releases/tag/v0.1.1).
 
 ## Runnable example: missing text in Mammoth
 
@@ -36,7 +43,7 @@ The demo uses original synthetic content and a documented `w:dir` text-loss case
 In a virtual environment, these two commands install and run the complete demo. No checkout or custom checker is needed:
 
 ```sh
-python -m pip install "docx-repro[demo] @ git+https://github.com/capt1nedev/docx-repro.git@v0.1.1"
+python -m pip install "docx-repro[demo]==0.1.1"
 docx-repro-demo demo
 ```
 
@@ -55,6 +62,7 @@ This example isolates text preservation; it does not validate full bidirectional
 Install the `mammoth` extra, then select a literal phrase within one paragraph that should survive conversion:
 
 ```sh
+python -m pip install "docx-repro[mammoth]"
 docx-repro input.docx --mammoth-missing-text "Expected phrase" --out reduced.docx
 ```
 
